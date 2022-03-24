@@ -1,0 +1,110 @@
+## Environment NODE
+version: "3"
+services:
+
+## SERVER PUBLIC ##
+  environment-public:
+    image: ${HOSTNAME}-public
+    cpus: 1
+    container_name: ${HOSTNAME}-public
+    hostname: ${HOSTNAME}-public
+    labels:
+      description: ${HOSTNAME}-public
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      target: by-codes-tec-public
+    volumes:
+      - ./public:/usr/${HOSTNAME}/public
+      - local-public:/usr/${HOSTNAME}/public/*
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: development
+    command: npm run dev:public
+    depends_on:
+      - environment-mysql
+      - environment-api
+    healthcheck:
+      test: curl --fail http://localhost:${API_PORT} || exit 1
+      interval: 5s
+      retries: 10
+      start_period: 10s
+      timeout: 5s
+    networks:
+      - local-network
+    restart: always
+    ports:
+      - ${PUBLIC_PORT}:${PUBLIC_PORT}
+
+## SERVER API ##
+  environment-api:
+    image: ${HOSTNAME}-api
+    cpus: 1
+    container_name: ${HOSTNAME}-api
+    hostname: ${HOSTNAME}-api
+    labels:
+      description: ${HOSTNAME}-api
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      target: by-codes-tec-api
+    volumes:
+      - .:/usr/${HOSTNAME}/api
+      - local-api:/usr/${HOSTNAME}/api/*
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: development
+    command: npm run dev:api
+    depends_on:
+      - environment-mysql
+    healthcheck:
+      test: curl --fail http://localhost:${API_PORT} || exit 1
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    networks:
+      - local-network
+    restart: always
+    ports:
+      - ${API_PORT}:${API_PORT}
+  
+## SERVER MYSQL ##
+  environment-mysql:
+    container_name: ${HOSTNAME}-mysql
+    image: ${HOSTNAME}-api
+    hostname: ${HOSTNAME}-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    labels:
+      description: ${HOSTNAME}-api
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      target: by-codes-tec-mysql
+    restart: always
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    env_file:
+      - ./.env
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: ${HOSTNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+    networks:
+      - local-network
+    ports:
+      - 3307:3306
+volumes:
+  local-public:
+    name: ${HOSTNAME}-public
+  local-api:
+    name: ${HOSTNAME}-api
+  mysql-volume:
+    name: ${HOSTNAME}-mysql
+networks:
+  local-network:
+    name: ${HOSTNAME}-network
+    driver: bridge

@@ -1,0 +1,139 @@
+
+
+body, html, header, main {
+  margin: 0;
+  padding: 0;
+}
+
+.center {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+}
+
+header {
+  background-color: rgba(68,120, 170, 1);
+  min-height: 72px;
+  justify-content: left !important;
+  padding: 0 24px;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 28px
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 2fr 3fr;
+  grid-template-areas: "filter motion bar" "table table table";
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+
+main  > * {
+  border: solid 1px rgba(0,0,0,0.1);
+  width: 100%;
+  min-height: 180px;
+}
+
+.filter {
+  grid-area: filter;
+  padding: 16px;
+  flex-direction: column;
+}
+
+.import {
+  display: block;
+  width: 150px;
+  overflow: hidden;
+  flex-direction: row;
+  left: 0;
+  font-size: 11px;
+  margin: 48px 0 0 0;
+}
+
+.import input {
+  border: none;
+  border-color: none;
+  color: transparent;
+}
+
+
+.graph-motion {
+  grid-area: motion;
+  padding: 16px;
+}
+
+.graph-bar-day {
+  grid-area: bar;
+  flex-direction: column;
+
+}
+
+.graph-bar-day h1{
+  margin-bottom: 16px;
+  font-weight: bold
+}
+
+.graph-bar-day-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.graph-bar-day-box > * {
+  border: solid 1px rgba(0,0,0,0.1);
+  padding: 8px;
+}
+
+.graph-bar-day-box span {
+  font-weight: bold;
+  margin-right: 32px;
+  float: right;
+}
+
+.table-finance {
+  grid-area: table;
+}
+
+table {
+  width: 100%;
+}
+table, tr, th, td {
+  border: solid 1px rgba(0,0,0,0.5);
+}
+
+th {
+  background-color: rgba(142, 71, 124);
+  color: #FFF;
+}
+
+th, td {
+  padding: 4px 16px;
+}
+
+td:not(:first-child) {
+  text-align: center;
+}
+
+.filter h2 {
+  margin-bottom: 24px;
+}
+
+.form-select, 
+.form-select > * {
+  outline: none;
+  border: none;
+  width: 100%
+  
+}
+
+.form-select {
+  border: solid 1px #CCC;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 24px;
+}
+

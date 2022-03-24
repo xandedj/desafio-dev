@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Finance</title>
+
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <script src="./js/tailwindcss.js"></script>
+  <script src="./js/chart.js"></script>
+  <script src="./js/read.input.js"></script>
+  <script src="./js/cnab.js"></script>
+  <script src="./js/send.js"></script>
+  <script src="./js/get.js"></script>
+  <script src="./js/table.js"></script>
+
+
+</head>
+<body>
+
+  <header class="center"> <h1>Relatório finaceiro</h1> </header>
+  
+  <main>
+
+    <section class="filter"> 
+      <h2>Filtro rápido</h2>
+      <form class="form-select">
+        <select>
+          <option value=""></option>
+        </select>
+      </form>
+
+      <form class="import">
+        <strong>Adicinar CNAB (upload)</strong>
+        <input class="" id="readfile" type="file" placeholder="file">
+      </form>
+    </section>
+
+    <section class="graph-motion center">
+      <div>
+        <canvas id="myChart"></canvas>
+      </div>      
+    </section>
+    
+    <section class="graph-bar-day center">
+      <h1>Totol de cada loja.</h1>
+      <div class="graph-bar-day-box"></div>
+
+    </section>
+
+    <section class="table-finance">
+
+      <table class="border-collapse border border-slate-500 ...">
+        <thead>
+          <tr>
+            <th class="border border-slate-600 ...">State</th>
+            <th class="border border-slate-600 ...">City</th>
+          </tr>
+        </thead>
+        <tbody id="table-contant">
+          <tr>
+            <td class="border border-slate-700 ...">Indiana</td>
+            <td class="border border-slate-700 ...">Indianapolis</td>
+          </tr>
+          <tr>
+            <td class="border border-slate-700 ...">Ohio</td>
+            <td class="border border-slate-700 ...">Columbus</td>
+          </tr>
+          <tr>
+            <td class="border border-slate-700 ...">Michigan</td>
+            <td class="border border-slate-700 ...">Detroit</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </section>
+    
+  </main>
+</body>
+
+</html>
+
+<script type="text/javascript">
+(async()=> {
+
+  const dt = await get("http://localhost:5000/cnabs")
+  const tab = new Table(dt)
+  tab.print('.table-finance')
+  tab.filter('.form-select');
+  await tab.dash('.graph-bar-day-box');
+
+
+  // alualia a lista com o evento do filtro
+  tab.observers.push(async(value)=> {
+    const udt = await get(`http://localhost:5000/cnabs/${value}`);
+    tab.refresh(udt);
+    tab.print('.table-finance')
+    console.log("asdf", value);
+  });
+
+
+  const data = {
+    labels: tab.labels,
+    datasets: [{
+      label: 'My First Dataset',
+      data: tab.values,
+      backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(75, 192, 192)',
+        'rgb(255, 205, 86)',
+        'rgb(201, 203, 207)',
+        'rgb(54, 162, 235)'
+      ]
+    }]
+  };
+
+  
+const config = { type: 'pie', data: data, options: {} };
+const myChart = new Chart(document.getElementById('myChart'), config);
+
+
+  // ler o arquivo local
+  const text = await ReadFile('readfile');
+  
+  // faz a transformacao do arquivo
+  const cnab = new Cnab(text);
+  
+  // faz o upload para o servidor
+  const response = await send('http://localhost:5000/cnabs', JSON.stringify(cnab.bath()));
+  console.log("RESULT", response);
+
+ 
+
+
+})()
+</script>
